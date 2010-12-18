@@ -13,6 +13,9 @@ module Lingustics
       # given type of verb (French, Latin, Spanish).  I'm not trying to be
       # obscure, but I'm trying to be very generalizable.
       class VerbvectorGenerator
+        # Initialization
+        #
+        # Takes the descriptive block of the tense structure in a DSL format
         def initialize(&b)
           yield
         end

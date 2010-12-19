@@ -11,26 +11,30 @@ class TestVerbVector  < Test::Unit::TestCase
     v = Lingustics::Verbs::Verbvector::VerbvectorGenerator.new do
     end
   end
-  def ctest_latin
-    # Lingustics::Verbs::Verbvector::VerbvectorGenerator.new do
-    #   language :Latin do
-    #     all_vectors start_with do
-    #       :voice =>  %w(active passive),
-    #       :mood  =>  %w(indicative subjunctive imperative)
-    #     end
-    #     all_vectors end_with do
-    #       :person => %w(first second third),
-    #       :number => %w(singular plural)
-    #     end
-    #     vectors_that /.*_indicative_mood_/ have do
-    #       :tenses => %w(present imperfect future
-    #                     perfect pluperfect futureperfect)
-    #     end
-    #     vectors_that /.*_subjunctive_mood_/ do
-    #       :tenses => %w(present imperfect 
-    #                     perfect pluperfect)
-    #     end
-    #   end
-    # end
+  def test_latin
+    vv = 
+    Lingustics::Verbs::Verbvector::VerbvectorGenerator.new do
+       language :Latin do
+         all_vectors :start_with do
+            {
+             :voice =>  %w(active passive),
+             :mood  =>  %w(indicative subjunctive imperative)
+            }
+         end
+       #   all_vectors end_with do
+       #     :person => %w(first second third),
+       #     :number => %w(singular plural)
+       #   end
+       #   vectors_that /.*_indicative_mood_/ have do
+       #     :tenses => %w(present imperfect future
+       #                   perfect pluperfect futureperfect)
+       #   end
+       #   vectors_that /.*_subjunctive_mood_/ do
+       #     :tenses => %w(present imperfect 
+       #                   perfect pluperfect)
+       #   end
+       end
+     end
+     assert_equal(@tense_list, vv.tense_list)
   end
 end

@@ -46,7 +46,6 @@ module Lingustics
         # of that language.
         def language(l,&b) 
           @language = l
-          # debugger
           instance_eval &b
         end
         
@@ -55,16 +54,37 @@ module Lingustics
         # aspect can take.  This is a wrapping method onto +start_with+ and
         # +end_with+
         def all_vectors(position,&b)
-          pp combinatorialize(yield)
+          # return unless block_given? or yield.first
+          return @tense_list unless yield.first
+          truths = yield
+          a_universal = truths.first
+
+          universals = combinatorialize(a_universal)
+          truths.delete(a_universal[0])   
+          
+          if @tense_list.empty? 
+            @tense_list = universals 
+          else
+            temp = []
+            @tense_list.each do |base|
+              universals.each do |u|
+
+                temp.push base+"_#{u}"
+              end
+            end
+            @tense_list = temp
+          end
+          
+          all_vectors(position) do
+            truths
+          end
           
         end
         
         def combinatorialize(h)
           results = []
-          h.each_pair do |k,v|
-            v.each do |mode|
-              results.push "#{mode}_#{k}"
-            end
+          h[1].each do |k|
+            results.push "#{k}_#{h[0]}"
           end
           results
         end

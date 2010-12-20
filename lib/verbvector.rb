@@ -23,9 +23,10 @@ module Lingustics
         #
         # Takes the descriptive block of the tense structure in a DSL format
         def initialize(&b)
-          @aspects    = []
-          @tense_list = []
-          @language   = ""
+          @aspects     = []
+          @vector_list = []
+          @tense_list  = []
+          @language    = ""
           
           # Let's remember the difference between instance_ and class_eval.
           #
@@ -41,13 +42,18 @@ module Lingustics
           # method.
           instance_eval &b
           
-          # TODO:  We should mave sure that #finish has run
+          @aspects.sort!
+          @tense_list = match_vector_upto_aspect "tense"
+          
         end
-        
-        # After the compete vector set is complete, finish is executed to
-        # build in additional methods
-        def finish
-          puts "my aspects were #{@aspects}"
+                
+        # Vectors are specified at their most atomic, and therefore most
+        # brief.  Sometimes it is handy to return all the values that match
+        # "up to" a given aspect and then uniq'ify them
+        def match_vector_upto_aspect(s)
+            @vector_list.sort.grep(/#{s}/).map{ |x| 
+              x.sub(/(^.*#{s}).*/,"#{$1}")
+            }.uniq.compact.delete_if {|x| x !~ /\w/}
         end
         
         # Language takes a symbol for +l+ the language whose verb we seek to
@@ -65,10 +71,10 @@ module Lingustics
 
         def all_vectors(position,&b)
           # Make sure there is a block given
-          return unless block_given? or yield.first
+          return unless (block_given? or yield.first)
           
           # Sentinel condition for stopping recursive call
-          return @tense_list unless yield.first
+          return @vector_list unless yield.first
           
           # Provided that there was a block, collect the DSL hash into
           # specifications
@@ -90,20 +96,20 @@ module Lingustics
           
           # If it's the first go round put the first set of values in.  In
           # general these should be the leftmost and theremfore most general
-          if @tense_list.empty? 
-            @tense_list = expanded_specification 
+          if @vector_list.empty? 
+            @vector_list = expanded_specification 
           else
             # If there's already a definition in the tens list, for each of
             # the _existing_ values add the array of strings seen in
             # expanded_specifications thereunto.  Hold them in 'temp' and then
-            # set @tense_list to temp.
+            # set @vector_list to temp.
             temp = []
-            @tense_list.each do |base|
+            @vector_list.each do |base|
               expanded_specification.each do |u|
                 temp.push base+"_#{u}"
               end
             end
-            @tense_list = temp
+            @vector_list = temp
           end
           
           # Recursive call, sentnel contition is at the top of the method
@@ -116,7 +122,7 @@ module Lingustics
         
         # Method appends vector definitions /if/ the +condition+ (a RegEx) is satisfied
         def vectors_that(condition,&b)
-          matching_stems = @tense_list.grep condition
+          matching_stems = @vector_list.grep condition
           temp = []
           
           specifications = yield
@@ -138,15 +144,14 @@ module Lingustics
           # So we grepped the desired stems and stored them in matching_stems
           # First we delete those stems (becasue we're going to further specify) them
           matching_stems.each do |x| 
-            @tense_list.delete x
+            @vector_list.delete x
             expanded_specification.each do |u|
               temp.push x+"_#{u}"
             end
           end
           
           # Combine the original list with the freshly expanded list
-          @tense_list = (@tense_list + temp).sort
-
+          @vector_list = (@vector_list + temp).sort
         end
         
         

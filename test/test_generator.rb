@@ -25,13 +25,13 @@ class TestVerbVector  < Test::Unit::TestCase
          vectors_that /.*_indicative_mood/ do
            {
              :tense  => %w(present imperfect future
-                           perfect pluperfect futureperfect)
+                           perfect pastperfect futureperfect)
            }
          end
-         vectors_that /.*_subjunctive_mood_/ do
+         vectors_that /.*_subjunctive_mood/ do
            {
              :tense => %w(present imperfect 
-                           perfect pluperfect)
+                           perfect pastperfect)
            }
          end
          all_vectors :end_with do
@@ -39,10 +39,11 @@ class TestVerbVector  < Test::Unit::TestCase
              :number => %w(singular plural),
              :person => %w(first second third)
            }
-          # finish
          end
        end
      end
-     assert_equal(@tense_list, vv.aspects)
+   assert_equal(@tense_list, vv.tense_list)
+   assert_equal(2, vv.match_vector_upto_aspect("voice").length)
+
   end
 end

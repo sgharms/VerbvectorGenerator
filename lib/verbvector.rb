@@ -14,8 +14,9 @@ module Lingustics
       # given type of verb (French, Latin, Spanish).  I'm not trying to be
       # obscure, but I'm trying to be very generalizable.
       class VerbvectorGenerator
-        attr_reader :tense_list, :language, :aspects
+        attr_reader :tense_list, :language, :aspect_list, :vector_list
         
+        # Class methods go here
         class << self
         end
         
@@ -23,7 +24,7 @@ module Lingustics
         #
         # Takes the descriptive block of the tense structure in a DSL format
         def initialize(&b)
-          @aspects     = []
+          @aspect_list = []
           @vector_list = []
           @tense_list  = []
           @language    = ""
@@ -42,7 +43,7 @@ module Lingustics
           # method.
           instance_eval &b
           
-          @aspects.sort!
+          @aspect_list.sort!
           @tense_list = match_vector_upto_aspect "tense"
           
         end
@@ -91,8 +92,8 @@ module Lingustics
           specifications.delete(specification[0])   
           
           # Keep a record of aspects we have seen
-          @aspects.push specification[0]
-          @aspects.uniq!
+          @aspect_list.push specification[0]
+          @aspect_list.uniq!
           
           # If it's the first go round put the first set of values in.  In
           # general these should be the leftmost and theremfore most general
@@ -138,8 +139,8 @@ module Lingustics
           specifications.delete(specification[0])   
 
           # Keep a record of aspects we have seen
-          @aspects.push specification[0]
-          @aspects.uniq!
+          @aspect_list.push specification[0]
+          @aspect_list.uniq!
           
           # So we grepped the desired stems and stored them in matching_stems
           # First we delete those stems (becasue we're going to further specify) them

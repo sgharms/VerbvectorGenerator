@@ -14,7 +14,7 @@ module Lingustics
       # given type of verb (French, Latin, Spanish).  I'm not trying to be
       # obscure, but I'm trying to be very generalizable.
       class VerbvectorGenerator
-        attr_reader :tense_list, :language
+        attr_reader :tense_list, :language, :aspects
         
         class << self
         end
@@ -23,6 +23,7 @@ module Lingustics
         #
         # Takes the descriptive block of the tense structure in a DSL format
         def initialize(&b)
+          @aspects    = []
           @tense_list = []
           @language   = ""
           
@@ -39,6 +40,14 @@ module Lingustics
           # eigenclass.  That means any instance of this class will have this
           # method.
           instance_eval &b
+          
+          # TODO:  We should mave sure that #finish has run
+        end
+        
+        # After the compete vector set is complete, finish is executed to
+        # build in additional methods
+        def finish
+          puts "my aspects were #{@aspects}"
         end
         
         # Language takes a symbol for +l+ the language whose verb we seek to
@@ -49,37 +58,97 @@ module Lingustics
           instance_eval &b
         end
         
-        # Used to take a hash that has as key the verbal aspect that is under
-        # consideration.  As values it has all the possible values that that
-        # aspect can take.  This is a wrapping method onto +start_with+ and
-        # +end_with+
-        def all_vectors(position,&b)
-          # return unless block_given? or yield.first
-          return @tense_list unless yield.first
-          truths = yield
-          a_universal = truths.first
+        # Method generates tense vectors based on aspects that are assumed to
+        # apply to all possible vectors.  These would be seen as the most
+        # general aspects possible  For example, while only *some* vectors are
+        # present tense, *all* vectors have a voice.
 
-          universals = combinatorialize(a_universal)
-          truths.delete(a_universal[0])   
+        def all_vectors(position,&b)
+          # Make sure there is a block given
+          return unless block_given? or yield.first
           
+          # Sentinel condition for stopping recursive call
+          return @tense_list unless yield.first
+          
+          # Provided that there was a block, collect the DSL hash into
+          # specifications
+          specifications = yield
+          
+          # Extract the first k/v
+          specification = specifications.first
+
+          # Based on the key for each row, take that content and postpend
+          # it.to_s to the ending of each value held in the hash element value
+          expanded_specification = combinatorialize(specification)
+          
+          # Remove the expanded value from the specifications hash
+          specifications.delete(specification[0])   
+          
+          # Keep a record of aspects we have seen
+          @aspects.push specification[0]
+          @aspects.uniq!
+          
+          # If it's the first go round put the first set of values in.  In
+          # general these should be the leftmost and theremfore most general
           if @tense_list.empty? 
-            @tense_list = universals 
+            @tense_list = expanded_specification 
           else
+            # If there's already a definition in the tens list, for each of
+            # the _existing_ values add the array of strings seen in
+            # expanded_specifications thereunto.  Hold them in 'temp' and then
+            # set @tense_list to temp.
             temp = []
             @tense_list.each do |base|
-              universals.each do |u|
-
+              expanded_specification.each do |u|
                 temp.push base+"_#{u}"
               end
             end
             @tense_list = temp
           end
           
+          # Recursive call, sentnel contition is at the top of the method
           all_vectors(position) do
-            truths
+            specifications
           end
           
+          instance_eval &b
         end
+        
+        # Method appends vector definitions /if/ the +condition+ (a RegEx) is satisfied
+        def vectors_that(condition,&b)
+          matching_stems = @tense_list.grep condition
+          temp = []
+          
+          specifications = yield
+          
+          # Extract the first k/v
+          specification = specifications.first
+
+          # Based on the key for each row, take that content and postpend
+          # it.to_s to the ending of each value held in the hash element value
+          expanded_specification = combinatorialize(specification)
+          
+          # Remove the expanded value from the specifications hash
+          specifications.delete(specification[0])   
+
+          # Keep a record of aspects we have seen
+          @aspects.push specification[0]
+          @aspects.uniq!
+          
+          # So we grepped the desired stems and stored them in matching_stems
+          # First we delete those stems (becasue we're going to further specify) them
+          matching_stems.each do |x| 
+            @tense_list.delete x
+            expanded_specification.each do |u|
+              temp.push x+"_#{u}"
+            end
+          end
+          
+          # Combine the original list with the freshly expanded list
+          @tense_list = (@tense_list + temp).sort
+
+        end
+        
         
         def combinatorialize(h)
           results = []
@@ -88,6 +157,7 @@ module Lingustics
           end
           results
         end
+        
       end
     end
   end

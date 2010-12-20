@@ -52,7 +52,7 @@ module Lingustics
         # brief.  Sometimes it is handy to return all the values that match
         # "up to" a given aspect and then uniq'ify them
         def match_vector_upto_aspect(s)
-            @vector_list.sort.grep(/#{s}/).map{ |x| 
+            @vector_list.compact.sort.grep(/#{s}/).map{ |x| 
               x.sub(/(^.*#{s}).*/,"#{$1}")
             }.uniq.compact.delete_if {|x| x !~ /\w/}
         end
@@ -105,7 +105,7 @@ module Lingustics
             # expanded_specifications thereunto.  Hold them in 'temp' and then
             # set @vector_list to temp.
             temp = []
-            @vector_list.each do |base|
+            @vector_list.compact.each do |base|
               expanded_specification.each do |u|
                 temp.push base+"_#{u}"
               end
@@ -123,7 +123,7 @@ module Lingustics
         
         # Method appends vector definitions /if/ the +condition+ (a RegEx) is satisfied
         def vectors_that(condition,&b)
-          matching_stems = @vector_list.grep condition
+          matching_stems = @vector_list.compact.grep condition
           temp = []
           
           specifications = yield
@@ -153,6 +153,7 @@ module Lingustics
           
           # Combine the original list with the freshly expanded list
           @vector_list = (@vector_list + temp).sort
+          @vector_list.compact!
         end
         
         

@@ -34,12 +34,18 @@ class TestVerbVector  < Test::Unit::TestCase
                            perfect pastperfect)
            }
          end
+         vectors_that /.*_imperative_mood/ do
+           {
+             :tense => %w(present)
+           }
+         end
          all_vectors :end_with do
            {
              :number => %w(singular plural),
              :person => %w(first second third)
            }
          end
+         exception :remove, :passive_voice_imperative_mood_present_tense
        end
      end
    assert_equal(@tense_list, vv.tense_list)

@@ -51,7 +51,7 @@ h1.  Example
 
 _Taken from the test/ directory_
 
-code.
+bc..
 
 Lingustics::Verbs::Verbvector::VerbvectorGenerator.new do
    language :Latin do
@@ -87,7 +87,6 @@ Lingustics::Verbs::Verbvector::VerbvectorGenerator.new do
      exception :remove, :passive_voice_imperative_mood_present_tense
    end
  end
-
 
 h1.  Author
 

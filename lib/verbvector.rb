@@ -43,18 +43,21 @@ module Lingustics
           # method.
           instance_eval &b
           
+          @tense_list ||= match_vector_upto_aspect "tense"
           @aspect_list.sort!
-          @tense_list = match_vector_upto_aspect "tense"
-          
         end
-                
+
+        # def tense_list
+        #   @tense_list ||= match_vector_upto_aspect "tense"
+        # end
+        
         # Vectors are specified at their most atomic, and therefore most
         # brief.  Sometimes it is handy to return all the values that match
         # "up to" a given aspect and then uniq'ify them
-        def match_vector_upto_aspect(s)
-            @vector_list.compact.sort.grep(/#{s}/).map{ |x| 
-              x.sub(/(^.*#{s}).*/,"#{$1}")
-            }.uniq.compact.delete_if {|x| x !~ /\w/}
+        def match_vector_upto_aspect(s)         
+          @vector_list.compact.sort.grep(/#{s}/).map{ |x| 
+            x.sub(/(^.*#{s}).*/,%q(\1))
+          }.uniq         
         end
         
         # Language takes a symbol for +l+ the language whose verb we seek to

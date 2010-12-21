@@ -157,6 +157,22 @@ module Lingustics
           @vector_list = (@vector_list + temp).sort
         end
         
+        # Languages are not entirely rational, while something /ought/ exist
+        # be the rules of rational combination, some times they simply don't
+        # exist.  That's what this method is for.
+        #
+        # +action+ :: +:remove+ or +:add+
+        # +id+     :: method name to remove
+        # _block_  :: used to add
+        def exception(action, id, &b)
+          if action == :remove
+            # debugger
+            # puts @vector_list.length
+            @vector_list.delete_if {|x| x =~ /#{id.to_s}/ } 
+            # puts @vector_list.length
+          elsif action == :add
+          end
+        end
         
         def combinatorialize(h)
           results = []

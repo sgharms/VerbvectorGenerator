@@ -46,3 +46,7 @@ code.
 h2.  exception (:remove|:add), :branch _block_
 
 Languages are not perfectly rational in their combinations.  Occasionally you may need to manually add a vector or, more likely, prune a vector.  
+
+h1.  Author
+
+Steven G. Harms

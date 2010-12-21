@@ -47,6 +47,48 @@ h2.  exception (:remove|:add), :branch _block_
 
 Languages are not perfectly rational in their combinations.  Occasionally you may need to manually add a vector or, more likely, prune a vector.  
 
+h1.  Example
+
+_Taken from the test/ directory_
+
+code.
+
+Lingustics::Verbs::Verbvector::VerbvectorGenerator.new do
+   language :Latin do
+     all_vectors :start_with do
+        {
+         :voice =>  %w(active passive),
+         :mood  =>  %w(indicative subjunctive imperative)
+        }
+     end
+     vectors_that /.*_indicative_mood/ do
+       {
+         :tense  => %w(present imperfect future
+                       perfect pastperfect futureperfect)
+       }
+     end
+     vectors_that /.*_subjunctive_mood/ do
+       {
+         :tense => %w(present imperfect 
+                       perfect pastperfect)
+       }
+     end
+     vectors_that /.*_imperative_mood/ do
+       {
+         :tense => %w(present)
+       }
+     end
+     all_vectors :end_with do
+       {
+         :number => %w(singular plural),
+         :person => %w(first second third)
+       }
+     end
+     exception :remove, :passive_voice_imperative_mood_present_tense
+   end
+ end
+
+
 h1.  Author
 
 Steven G. Harms

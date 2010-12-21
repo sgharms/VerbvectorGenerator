@@ -1,0 +1,48 @@
+h1.  Lingustics::Verbs::Verbvector::VerbvectorGenerator
+
+This is, what I hope will become a burgeoning array of tools for those interested in languages and linguistics.  Any given language's conjugation can be seen as a _vector_, an intersection of several _aspects_ that singularly identify the correct grammatical choice for a given utterance.  
+
+In Latin, for example, this is defined by *voice*, *mood*, *tense*, *number*, and *person*.  Other languages have a more- or less-specific vector.  The function of this module, therefore, is to make the exhaustive generation of these vectors simple.  
+
+h1. Usage
+
+Usage is performed by passing a DSL into the module.  The module then returns a module based on the _language_ parameter.  This resultant module can be mixed-in to your class (say, *LanguageVerb*) to define all the possible method calls (for playing nice with responds_to in case *LanguageVerb* uses metaprogramming in its responses)
+
+h1.  DSL
+
+Initial attempts at something like this produced an incredibly confusing snarl of eval statments and other oddities and wound up neither being specific enough to be easily used nor portable enough to be generally helpful.
+
+The DSL is simple and recognizes the following utterances:
+
+h2.  language :LanguageName _block_
+
+The first statement.  It takes a block that will be further processed and which contains other defining statements for the :Language.  The only accepted argument is a symbol for the Language name.
+
+h2.  all_vectors :position _block_
+
+This defines an aspect common to *all* vectors.  Aspects are defined in an anonymous hash included in the block.  The :position symbol is not presently used but instead stacks from left to right.  This may have reason to change.
+
+Inside the block one gives the _aspect_ as a symbol and then gives an array containing the valid specifications for that aspect.
+
+Example:
+
+code.
+{
+ :voice =>  %w(active passive),
+ :mood  =>  %w(indicative subjunctive imperative)
+}
+
+h2. vectors_that Regexp _block_
+
+This defines an aspect common to *all* vectors.  Aspects are defined in an anonymous hash included in the block.  Thus for all existing vectors in the vector stack that match the Regexp, this aspect/specification will be added
+
+code.
+
+{
+  :tense  => %w(present imperfect future
+                perfect pastperfect futureperfect)
+}
+
+h2.  exception (:remove|:add), :branch _block_
+
+Languages are not perfectly rational in their combinations.  Occasionally you may need to manually add a vector or, more likely, prune a vector.  

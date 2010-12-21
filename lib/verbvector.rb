@@ -107,7 +107,7 @@ module Lingustics
             # expanded_specifications thereunto.  Hold them in 'temp' and then
             # set @vector_list to temp.
             temp = []
-            @vector_list.compact.each do |base|
+            @vector_list.each do |base|
               expanded_specification.each do |u|
                 temp.push base+"_#{u}"
               end
@@ -125,7 +125,7 @@ module Lingustics
         
         # Method appends vector definitions /if/ the +condition+ (a RegEx) is satisfied
         def vectors_that(condition,&b)
-          matching_stems = @vector_list.compact.grep condition
+          matching_stems = @vector_list.grep condition
           temp = []
           
           specifications = yield
@@ -155,7 +155,6 @@ module Lingustics
           
           # Combine the original list with the freshly expanded list
           @vector_list = (@vector_list + temp).sort
-          @vector_list.compact!
         end
         
         

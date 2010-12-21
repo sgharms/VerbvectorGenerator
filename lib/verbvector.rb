@@ -174,6 +174,8 @@ module Lingustics
           end
         end
         
+        # Method to take a hash key where the key is an _aspect_ and the value
+        # is an array of specifications valid for that _aspect_.
         def combinatorialize(h)
           results = []
           h[1].each do |k|

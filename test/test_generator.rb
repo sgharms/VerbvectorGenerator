@@ -48,8 +48,11 @@ class TestVerbVector  < Test::Unit::TestCase
          exception :remove, :passive_voice_imperative_mood_present_tense
        end
      end
-   assert_equal(@tense_list, vv.tense_list)
-   assert_equal(2, vv.match_vector_upto_aspect("voice").length)
 
+   assert_equal @tense_list, vv.tense_list
+   assert_equal 2,  vv.match_vector_upto_aspect("voice").length
+   assert_equal 5,  vv.match_vector_upto_aspect("mood").length
+   assert_equal 21, vv.match_vector_upto_aspect("tense").length
+pp vv.aspect_list.map{|x| x.to_s}
   end
 end

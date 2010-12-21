@@ -26,7 +26,6 @@ module Lingustics
         def initialize(&b)
           @aspect_list = []
           @vector_list = []
-          @tense_list  = []
           @language    = ""
           
           # Let's remember the difference between instance_ and class_eval.
@@ -79,7 +78,7 @@ module Lingustics
           
           # Sentinel condition for stopping recursive call
           return @vector_list unless yield.first
-          
+
           # Provided that there was a block, collect the DSL hash into
           # specifications
           specifications = yield

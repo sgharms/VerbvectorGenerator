@@ -10,9 +10,9 @@ Usage is performed by passing a DSL into the module.  The module then returns a 
 
 h1.  DSL
 
-Initial attempts at something like this produced an incredibly confusing snarl of eval statments and other oddities and wound up neither being specific enough to be easily used nor portable enough to be generally helpful.
+Initial attempts at producing a verb tense generator wound up producing an incredibly confusing snarl of @eval@ statments and other oddities and wound up neither being specific enough to be easily used nor portable enough to be generally helpful.  
 
-The DSL is simple and recognizes the following utterances:
+The DSL is simple and recognizes the following statements:
 
 h2.  language :LanguageName _block_
 
@@ -26,22 +26,23 @@ Inside the block one gives the _aspect_ as a symbol and then gives an array cont
 
 Example:
 
-code.
+<pre>
 {
  :voice =>  %w(active passive),
  :mood  =>  %w(indicative subjunctive imperative)
 }
+</pre>
 
 h2. vectors_that Regexp _block_
 
 This defines an aspect common to *all* vectors.  Aspects are defined in an anonymous hash included in the block.  Thus for all existing vectors in the vector stack that match the Regexp, this aspect/specification will be added
 
-code.
-
+<pre>
 {
   :tense  => %w(present imperfect future
                 perfect pastperfect futureperfect)
 }
+</pre>
 
 h2.  exception (:remove|:add), :branch _block_
 

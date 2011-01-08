@@ -56,16 +56,13 @@ class TestVerbVector  < Test::Unit::TestCase
    assert_equal 5,          @vv.match_vector_upto_aspect("mood").length
    assert_equal 21,         @vv.match_vector_upto_aspect("tense").length
   end
-  
+
   def test_extension
-    m = @vv.create_module
-    k = Class.new 
-    k.class_eval do
-      include m 
-    end
-    
-    the_test = k.new
-    the_test.razzle
-         
+    tc = Class.new
+
+    tc.extend @vv.create_module
+        
+    assert_respond_to(tc, :active_voice_indicative_mood_imperfect_tense_singular_number_third_person)
+
   end
 end

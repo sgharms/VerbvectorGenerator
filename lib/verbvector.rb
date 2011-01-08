@@ -59,6 +59,25 @@ module Lingustics
           }.uniq         
         end
         
+        def create_module
+          v = @vector_list
+          Module.new do
+            # This defines instance methods on the Module
+            # m.instance_methods #=> [:say_foo, :say_bar, :say_bat]
+ 
+            # Note, you can't use @someArray in the iteration because
+            # self has changed to this anonymous module.  Since a block
+            # is a binding, it has the local context (including a_var) 
+            # bundled up with it -- despte self having changed!  
+            # Therefore, this works
+ 
+            v.each do |m|
+              define_method "#{m}".to_sym do
+              end
+            end     
+          end                
+        end
+        
         # Language takes a symbol for +l+ the language whose verb we seek to
         # model.  It then takes a block for the sub-specification of the verbs
         # of that language.

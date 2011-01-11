@@ -14,7 +14,7 @@ module Lingustics
       # given type of verb (French, Latin, Spanish).  I'm not trying to be
       # obscure, but I'm trying to be very generalizable.
       class VerbvectorGenerator
-        attr_reader :tense_list, :language, :aspect_list, :vector_list
+        attr_reader :language, :aspect_list, :vector_list
         
         # Class methods go here
         class << self
@@ -24,9 +24,10 @@ module Lingustics
         #
         # Takes the descriptive block of the tense structure in a DSL format
         def initialize(&b)
-          @aspect_list = []
-          @vector_list = []
-          @language    = ""
+          @aspect_list     = []
+          @vector_list     = []
+          @cluster_methods = {}
+          @language        = ""
           
           # Let's remember the difference between instance_ and class_eval.
           #
@@ -42,39 +43,49 @@ module Lingustics
           # method.
           instance_eval &b
           
-          @tense_list ||= match_vector_upto_aspect "tense"
           @aspect_list.sort!
         end
-
-        # def tense_list
-        #   @tense_list ||= match_vector_upto_aspect "tense"
-        # end
         
-        # Vectors are specified at their most atomic, and therefore most
-        # brief.  Sometimes it is handy to return all the values that match
+        # Vectors are specified at their most atomic
+        # Sometimes it is handy to return all the values that match
         # "up to" a given aspect and then uniq'ify them
+
         def match_vector_upto_aspect(s)         
           @vector_list.compact.sort.grep(/#{s}/).map{ |x| 
             x.sub(/(^.*#{s}).*/,%q(\1))
           }.uniq         
         end
         
+        # Creates the anonymous module based on the contents of @vector_list. 
+        # The method names in this module are just stubs _except_ those that
+        # are loaded into the @cluster_methods hash.  By generating all the
+        # method names we allow +responds_to?+ to work as expected.
+
         def create_module
           v = @vector_list
+          c = @cluster_methods
           Module.new do
             # This defines instance methods on the Module
             # m.instance_methods #=> [:say_foo, :say_bar, :say_bat]
  
             # Note, you can't use @someArray in the iteration because
             # self has changed to this anonymous module.  Since a block
-            # is a binding, it has the local context (including a_var) 
+            # is a binding, it has the local context (including 'v') 
             # bundled up with it -- despte self having changed!  
-            # Therefore, this works
+            # Therefore, the following works.
  
             v.each do |m|
               define_method "#{m}".to_sym do
               end
             end     
+
+            c.each_pair do |k,v|
+              define_method k do
+                v.call
+              end              
+            end
+
+
           end                
         end
         
@@ -142,7 +153,7 @@ module Lingustics
           instance_eval &b
         end
         
-        # Method appends vector definitions /if/ the +condition+ (a RegEx) is satisfied
+        # Method appends vector definitions _if_ the +condition+ (a RegEx) is satisfied
         def vectors_that(condition,&b)
           matching_stems = @vector_list.grep condition
           temp = []
@@ -176,8 +187,8 @@ module Lingustics
           @vector_list = (@vector_list + temp).sort
         end
         
-        # Languages are not entirely rational, while something /ought/ exist
-        # be the rules of rational combination, some times they simply don't
+        # Languages are not entirely rational, while something _ought_ exist
+        # by the rules of rational combination, some times they simply _don't_
         # exist.  That's what this method is for.
         #
         # +action+ :: +:remove+ or +:add+
@@ -185,10 +196,7 @@ module Lingustics
         # _block_  :: used to add
         def exception(action, id, &b)
           if action == :remove
-            # debugger
-            # puts @vector_list.length
             @vector_list.delete_if {|x| x =~ /#{id.to_s}/ } 
-            # puts @vector_list.length
           elsif action == :add
           end
         end
@@ -201,6 +209,59 @@ module Lingustics
             results.push "#{k}_#{h[0]}"
           end
           results
+        end
+        
+        # Method to allow "clusters" of simiar vectors to be identified (see:
+        # +match_upto+) based on the 0th string match.  These clusters can be
+        # called by the method namd provided as the 2nd argument (0-index)
+        #
+        # This allows
+        # active_voice_indicative_mood_imperfect_tense_singular_number_third_p
+        # erson and other such to be 'clustered' as
+        # active_voice_indicative_mood_imperfect_tense.  This means the actual
+        # method will probably be done in the "cluster" and some sort of
+        # secondary logic (method_missing) will do the final resolution
+        #
+        # Nevertheless, per the logic of this library, by defining all the
+        # atomic, we play nice and give respond_to? all the information it
+        # needs
+        #
+        # *Example:*  <tt>cluster_on /active_voice.*third/, "as method", :active_thirds</tt>
+        # 
+        # 
+        # This means you want to collect several method names that match the Regexp and make them identifiable by a call to the 
+        # method +active_thirds+ 
+        #
+        # Alternatively, you might want to use a String or Symbol (making use of match_upto).
+        #
+        # *Example:*  <tt>cluster_on :tense, "as method", :tense_list</tt>
+        # 
+        # +match+  :: The String or Regex match_upto will use for matching
+        # +junk+          :: Syntactic sugar, a string that makes the DSL look sensible
+        # +method_name+   :: The method in the anonymous module that returns the matched method names.  See +create_module+       
+        def cluster_on(match, junk, method_name)
+
+          clustered_matches = 
+            if match.class == Regexp
+              @vector_list.grep match
+            elsif match.class.to_s =~ /^(String|Symbol)/
+              # Get the items that match_upto the specified clustering token
+              match_vector_upto_aspect(match.to_s)
+            else
+              # This shouldn't happen, we should get a Regexp or a String/Symbol
+              raise "Didn't fire for clustered match: #{match}"
+            end
+
+          unless clustered_matches.nil?
+            #...and add them to the @vector_list
+            @vector_list += clustered_matches
+
+            # Now, define a Proc that can correspond to arg[2]
+            @cluster_methods[method_name] = Proc.new do
+              clustered_matches
+            end
+          end
+          
         end
         
       end

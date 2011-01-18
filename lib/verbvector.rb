@@ -74,17 +74,23 @@ module Lingustics
             # bundled up with it -- despte self having changed!  
             # Therefore, the following works.
  
+            # Define a method for each name in vector_list.
             v.each do |m|
               define_method "#{m}".to_sym do
               end
             end     
+            
+            # Write something to spit out the vectors as well.
+            define_method :vector_list do
+              return v
+            end
 
+            # Spit out the clustered methods
             c.each_pair do |k,v|
               define_method k do
                 v.call
               end              
             end
-
 
           end                
         end

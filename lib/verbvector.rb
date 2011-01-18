@@ -14,7 +14,7 @@ module Lingustics
       # given type of verb (French, Latin, Spanish).  I'm not trying to be
       # obscure, but I'm trying to be very generalizable.
       class VerbvectorGenerator
-        attr_reader :language, :aspect_list, :vector_list
+        attr_reader :language, :aspect_list, :vector_list, :cluster_methods
         
         # Class methods go here
         class << self

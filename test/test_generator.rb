@@ -48,6 +48,7 @@ class TestVerbVector  < Test::Unit::TestCase
     end
     
     assert_not_nil(v)
+    assert_equal(:Latin, @vv.language)
   end
 
   def test_vector_matcher

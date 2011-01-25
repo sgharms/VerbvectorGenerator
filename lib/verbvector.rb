@@ -98,8 +98,9 @@ module Lingustics
         # Language takes a symbol for +l+ the language whose verb we seek to
         # model.  It then takes a block for the sub-specification of the verbs
         # of that language.
-        def language(l,&b) 
-          @language = l
+        def language(*l,&b) 
+          return @language if (l[0].nil? and not @language.nil?)
+          @language = l[0]
           instance_eval &b
         end
         

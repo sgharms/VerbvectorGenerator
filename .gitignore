@@ -1,4 +1,5 @@
 pkg/*
+*.swp
 *.gem
 .bundle
 rdoc/

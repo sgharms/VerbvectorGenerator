@@ -14,7 +14,8 @@ module Lingustics
       # given type of verb (French, Latin, Spanish).  I'm not trying to be
       # obscure, but I'm trying to be very generalizable.
       class VerbvectorGenerator
-        attr_reader :language, :aspect_list, :vector_list, :cluster_methods
+        attr_reader :language, :aspect_list, :vector_list, :cluster_methods, 
+                    :respondable_methods
         
         # Class methods go here
         class << self
@@ -24,10 +25,11 @@ module Lingustics
         #
         # Takes the descriptive block of the tense structure in a DSL format
         def initialize(&b)
-          @aspect_list     = []
-          @vector_list     = []
-          @cluster_methods = {}
-          @language        = ""
+          @aspect_list         = []
+          @vector_list         = []
+          @respondable_methods = []
+          @cluster_methods     = {}
+          @language            = ""
           
           # Let's remember the difference between instance_ and class_eval.
           #
@@ -61,9 +63,12 @@ module Lingustics
         # are loaded into the @cluster_methods hash.  By generating all the
         # method names we allow +responds_to?+ to work as expected.
 
-        def create_module
+        def method_extension_module
           v = @vector_list
           c = @cluster_methods
+          l = @language
+          r = @respondable_methods
+
           Module.new do
             # This defines instance methods on the Module
             # m.instance_methods #=> [:say_foo, :say_bar, :say_bat]
@@ -75,8 +80,11 @@ module Lingustics
             # Therefore, the following works.
  
             # Define a method for each name in vector_list.
+            raise("Language was not defined." ) if l.nil?
+
             v.each do |m|
-              define_method "#{m}".to_sym do
+              r << "#{m}"
+              define_method "#{l.downcase}_#{m}".to_sym do
               end
             end     
             

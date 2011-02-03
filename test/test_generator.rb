@@ -62,7 +62,7 @@ class TestVerbVector  < Test::Unit::TestCase
     tense_list.sort!
 
     tc = Class.new
-    tc.extend @vv.create_module        
+    tc.extend @vv.method_extension_module
 
     assert_equal tense_list, tc.tense_list
   end
@@ -105,15 +105,15 @@ class TestVerbVector  < Test::Unit::TestCase
        end
      end
      tc = Class.new
-     tc.extend t.create_module
+     tc.extend t.method_extension_module
      assert_respond_to(tc, :active_thirds)
      assert_equal(22, tc.active_thirds.length)
   end
   
   def test_extension
     tc = Class.new
-    tc.extend @vv.create_module        
-    assert_respond_to(tc, :active_voice_indicative_mood_imperfect_tense_singular_number_third_person)
+    tc.extend @vv.method_extension_module
+    assert_respond_to(tc, :latin_active_voice_indicative_mood_imperfect_tense_singular_number_third_person)
   end
   
   def test_clustering

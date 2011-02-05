@@ -272,8 +272,14 @@ module Lingustics
             end
 
           unless clustered_matches.nil?
-            #...and add them to the @vector_list
-            @vector_list += clustered_matches
+            # No, this should not be done:
+            #                    ...and add them to the @vector_list.  
+            #                    @vector_list += clustered_matches
+            # Clustered methods need to be defined, for real, somewhere.  We
+            # should not claim to respond to them here, but rather let the
+            # framework using verbvector have the responsibility for
+            # implementation.
+
 
             # Now, define a Proc that can correspond to arg[2]
             @cluster_methods[method_name] = Proc.new do

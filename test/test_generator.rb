@@ -119,5 +119,17 @@ class TestVerbVector  < Test::Unit::TestCase
   def test_clustering
     assert_respond_to(@vv, :vectors_that)
     assert_respond_to(@vv, :cluster_on)
+
+    tc = Class.new
+    tc.extend @vv.method_extension_module
+
+    # Make sure that each cluster method is /not/ defined.  We want these to
+    # be defined "for real," not as a proxy.
+
+    cms=@vv.cluster_methods[:tense_list].call
+    cms.each do |m|
+      assert_true  not(tc.respond_to? m.to_sym)
+    end
+
   end
 end

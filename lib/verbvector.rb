@@ -93,6 +93,10 @@ module Lingustics
               return v
             end
 
+            define_method :respondable_methods do
+              return r
+            end
+
             # Spit out the clustered methods
             c.each_pair do |k,v|
               define_method k do

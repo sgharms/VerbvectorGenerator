@@ -4,7 +4,7 @@ require "verbvector/version"
 
 Gem::Specification.new do |s|
   s.name        = "verbvector"
-  s.version     = Lingustics::Verbs::Verbvector::VERSION
+  s.version     = Linguistics::Verbs::Verbvector::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Steven G. Harms"]
   s.email       = ["github@sgharms.oib.com"]

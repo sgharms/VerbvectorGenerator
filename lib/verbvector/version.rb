@@ -1,4 +1,4 @@
-module Lingustics
+module Linguistics
   module Verbs
     module Verbvector
       # Version of the gem

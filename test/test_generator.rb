@@ -6,7 +6,7 @@ require "verbvector"
 class TestVerbVector  < Test::Unit::TestCase
   def setup
     @vv = 
-    Lingustics::Verbs::Verbvector::VerbvectorGenerator.new do
+    Linguistics::Verbs::Verbvector::VerbvectorGenerator.new do
        language :Latin do
          all_vectors :start_with do
             {
@@ -44,7 +44,7 @@ class TestVerbVector  < Test::Unit::TestCase
   end
 
   def test_basics
-    v = Lingustics::Verbs::Verbvector::VerbvectorGenerator.new do
+    v = Linguistics::Verbs::Verbvector::VerbvectorGenerator.new do
     end
     
     assert_not_nil(v)
@@ -69,7 +69,7 @@ class TestVerbVector  < Test::Unit::TestCase
 
   def test_clustering_with_regex
     t = 
-    Lingustics::Verbs::Verbvector::VerbvectorGenerator.new do
+    Linguistics::Verbs::Verbvector::VerbvectorGenerator.new do
        language :Latin do
          all_vectors :start_with do
             {

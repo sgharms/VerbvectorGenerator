@@ -3,7 +3,7 @@ require "verbvector"
 require 'pp'
 
 # Generalized module for handling lingustics processing
-module Lingustics
+module Linguistics
   # Generalized module related to the conjugation of verbs
   module Verbs
     # Each language's specific verb conjugation can be described in terms of a

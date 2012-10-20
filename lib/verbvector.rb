@@ -1,6 +1,5 @@
 $:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
-require "verbvector"
-require 'pp'
+require 'verbvector'
 
 # Generalized module for handling lingustics processing
 module Linguistics
@@ -16,11 +15,7 @@ module Linguistics
       class VerbvectorGenerator
         attr_reader :language, :aspect_list, :vector_list, :cluster_methods, 
                     :respondable_methods
-        
-        # Class methods go here
-        class << self
-        end
-        
+
         # Initialization
         #
         # Takes the descriptive block of the tense structure in a DSL format
